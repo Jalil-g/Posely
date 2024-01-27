@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { sendImage } from '../../utils';
 
 export default function CameraComponent({ navigation }) {
     const cameraRef = useRef(null);
@@ -19,7 +20,7 @@ export default function CameraComponent({ navigation }) {
         return (
             <>
                 <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-                <Button mode="contained" onPress={requestPermission} title="grant permission" />
+                <Button mode="contained" onPress={requestPermission} title="Grant permission" />
             </>
         );
     }
@@ -31,16 +32,20 @@ export default function CameraComponent({ navigation }) {
     const takePicture = async () => {
         if (cameraRef.current) {
             const data = await cameraRef.current.takePictureAsync({ base64: true });
-            navigation.navigate('Diagnosis', { base64: data.base64, uri: data.uri });
+            await sendImage(data.base64);
+            navigation.navigate('Home', { base64: data.base64, uri: data.uri });
         }
     }
 
     return (
         <View style={styles.container}>
             <Camera ref={cameraRef} style={styles.camera} type={type}>
+                <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+                    <MaterialCommunityIcons name="camera-flip" color={"#fff"} size={40} />
+                </TouchableOpacity>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={takePicture}>
-                        <MaterialCommunityIcons name="camera-iris" color={"#fff"} size={70} />
+                        <MaterialCommunityIcons name="circle-slice-8" color={"#fff"} size={80} />
                     </TouchableOpacity>
                 </View>
             </Camera>
@@ -64,9 +69,7 @@ const styles = StyleSheet.create({
         margin: 64,
     },
     button: {
-        // flex: 1,
         alignSelf: 'flex-end',
-        alignItems: 'center',
     },
     text: {
         fontSize: 24,
