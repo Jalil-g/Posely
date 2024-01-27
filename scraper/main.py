@@ -1,7 +1,7 @@
 import requests
 import os
 import time
-import unsplash_scraper.image_downloader as image_downloader
+import image_downloader
 
 
 class UnsplashImageDownloader:
