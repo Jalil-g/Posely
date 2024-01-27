@@ -1,29 +1,13 @@
-from PIL import Image
-import os
-print("Current Working Directcd ory:", os.getcwd())
+import cv2
 
-input_folder = "raw_images"
-output_folder = "images"
-target_size = (480, 480)  # Set your desired size
-print("Starting conversion...")
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
+def resize_and_convert_to_bw_cv2(input_path):
+    # Read the image using OpenCV
+    original_image = cv2.imread(input_path)
 
-for filename in os.listdir(input_folder):
-    if filename.endswith(".jpg") or filename.endswith(".png"):  # Add more extensions if needed
-        input_path = os.path.join(input_folder, filename)
-        output_path = os.path.join(output_folder, filename)
+    # Resize the image to 480x480 pixels
+    resized_image = cv2.resize(original_image, (480, 480))
 
-        # Open the image
-        image = Image.open(input_path)
+    # Convert the image to grayscale
+    bw_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
 
-        # Resize the image
-        resized_image = image.resize(target_size)
-
-        # Convert the image to black and white
-        bw_image = resized_image.convert("L")
-
-        # Save the result
-        bw_image.save(output_path)
-
-print("Conversion complete.")
+    return bw_image
