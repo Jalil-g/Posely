@@ -70,9 +70,9 @@ def draw_landmarks(image_path,land_arr):
         for i, j in connections:
             x1, y1, _ = (land_arr[i] * [256, 256, 1]).astype(int)
             x2, y2, _ = (land_arr[j] * [256, 256, 1]).astype(int)
-            if (i == 11 and j == 13) or (i == 13 and j == 11) or (i == 13 and j == 15) or (i == 15 and j == 13) or (i == 23 and j == 25) or (i == 25 and j == 23) or (i == 25 and j == 27) or (i == 27 and j == 25):
+            if (i == 1 and j == 3) or (i == 3 and j == 1) or (i == 3 and j == 5) or (i == 5 and j == 3) or (i == 7 and j == 9) or (i == 9 and j == 7) or (i == 9 and j == 11) or (i == 11 and j == 9):
                 color = (0, 0, 255)
-            elif (i == 12 and j == 14) or (i == 14 and j == 12) or (i == 14 and j == 16) or (i == 16 and j == 14) or (i == 24 and j == 26) or (i == 26 and j == 24) or (i == 26 and j == 28) or (i == 28 and j == 26):
+            elif (i == 2 and j == 4) or (i == 4 and j == 2) or (i == 4 and j == 6) or (i == 6 and j == 4) or (i == 8 and j == 10) or (i == 10 and j == 8) or (i == 10 and j == 12) or (i == 12 and j == 10):
                 color = (255, 0, 0)
             else:
                 color = (0, 255, 0)
