@@ -58,7 +58,13 @@ def draw_blank_image(image_path):
         if not ((land_arr[i][0] == 0 and land_arr[i][1] == 0) or (land_arr[j][0] == 0 and land_arr[j][1] == 0)):
             x1, y1, _ = (land_arr[i] * [image_frame.shape[1], image_frame.shape[0], 1]).astype(int)
             x2, y2, _ = (land_arr[j] * [image_frame.shape[1], image_frame.shape[0], 1]).astype(int)
-            cv2.line(transparent_img, (x1, y1), (x2, y2), (255, 0, 0, 255), 5)
+            if (i == 1 and j == 3) or (i == 3 and j == 1) or (i == 3 and j == 5) or (i == 5 and j == 3) or (i == 7 and j == 9) or (i == 9 and j == 7) or (i == 9 and j == 11) or (i == 11 and j == 9):
+                color = (0, 0, 255, 255)
+            elif (i == 2 and j == 4) or (i == 4 and j == 2) or (i == 4 and j == 6) or (i == 6 and j == 4) or (i == 8 and j == 10) or (i == 10 and j == 8) or (i == 10 and j == 12) or (i == 12 and j == 10):
+                color = (255, 0, 0, 255)
+            else:
+                color = (0, 255, 0, 255)
+            cv2.line(transparent_img, (x1, y1), (x2, y2), color, 2)
 
     cv2.imwrite("static/transparent.png", transparent_img)
 
@@ -79,7 +85,13 @@ def draw_landmarks(image_path, land_arr = [], write_image_path="static/processed
             if not ((land_arr[i][0] == 0 and land_arr[i][1] == 0) or (land_arr[j][0] == 0 and land_arr[j][1] == 0)):
                 x1, y1, _ = (land_arr[i] * [image_frame.shape[1], image_frame.shape[0], 1]).astype(int)
                 x2, y2, _ = (land_arr[j] * [image_frame.shape[1], image_frame.shape[0], 1]).astype(int)
-                cv2.line(image_frame, (x1, y1), (x2, y2), (255, 0, 0), 5)
+                if (i == 1 and j == 3) or (i == 3 and j == 1) or (i == 3 and j == 5) or (i == 5 and j == 3) or (i == 7 and j == 9) or (i == 9 and j == 7) or (i == 9 and j == 11) or (i == 11 and j == 9):
+                    color = (0, 0, 255)
+                elif (i == 2 and j == 4) or (i == 4 and j == 2) or (i == 4 and j == 6) or (i == 6 and j == 4) or (i == 8 and j == 10) or (i == 10 and j == 8) or (i == 10 and j == 12) or (i == 12 and j == 10):
+                    color = (255, 0, 0)
+                else:
+                    color = (0, 255, 0)
+                cv2.line(image_frame, (x1, y1), (x2, y2), color, 2)
 
         cv2.imwrite(write_image_path, image_frame)
 
