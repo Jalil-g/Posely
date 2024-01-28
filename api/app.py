@@ -31,19 +31,16 @@ def hello():
 def upload_image():
     try:
         image = request.files['image']
-
         image_path = "static/image.jpg"
         if image.filename == '':
             return jsonify({'message': 'No selected file'}), 400
-
         image.save(image_path)
-        #scale_image("static/img1.jpeg", image_path)
+
         prediction, predicted_image = predict(image_path)
         predicted_image_path = os.path.join('..', 'images', predicted_image)
         processed_image_path = 'static/processed_image.jpg'
-        #draw_landmarks(predicted_image_path, [], "static/labeled_prediction.jpg")
         draw_blank_image(predicted_image_path)
-        # Read the image file
+        
         return jsonify({"labeled": convert_to_base64(processed_image_path), "prediction": convert_to_base64(predicted_image_path), "transparent": convert_to_base64("static/transparent.png")})  #jsonify({"message": "Image uploaded and processed successfully", "image_path": processed_image_path})
     except Exception as e:
         return jsonify({"error": str(e)})

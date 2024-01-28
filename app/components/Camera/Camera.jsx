@@ -79,7 +79,7 @@ export default function CameraComponent({ navigation }) {
                         </>}
                     {clicked && <>
                     <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, flex: 1, padding: 5, alignItems: "flex-end", justifyContent: "center", zIndex: 999 }}>
-                        <TouchableOpacity style={styles.button} onPress={() => { setClicked(false); setImage(null); setPrediction(null); }}>
+                        <TouchableOpacity style={styles.button} onPress={() => { setClicked(false); setImage(null); setPrediction(null); setVisible(false) }}>
                             <MaterialCommunityIcons name="close-circle" color={"#fff"} size={40} />
                         </TouchableOpacity>
                         <View style={{ flex: 1, width: "100%", marginTop: 10 }}>

@@ -3,6 +3,7 @@ import mediapipe as mp
 import numpy as np
 import math
 import os
+import json
 
 mp_pose = mp.solutions.pose
 # Define connections between landmarks to represent a stickman
@@ -109,7 +110,7 @@ def scale_image(image1, image2):
             arr4.append([item[0] - vector_distances[0], item[1] - vector_distances[1], item[2] - vector_distances[2]])
     final_arr = np.array(arr4, dtype=np.float64)
     draw_landmarks(image2, final_arr)
-scale_image("static/img1.jpeg", "static/image.jpg")
+# scale_image("static/img1.jpeg", "static/image.jpg")
 def scale_image_predict(image, arr):
     arr1 = arr
     arr2 = generate_landmarks(image)
@@ -137,7 +138,6 @@ def scale_image_predict(image, arr):
     final_arr = np.array(arr4, dtype=np.float64)
     print("final_arr", final_arr)
     draw_landmarks(image, final_arr)
-
 def generate_pose_array(image_folder_path):
     # Generate an array of arrays of landmarks of the poses
     # image_folder_path is the path of the folder that contains the images of the poses
@@ -146,6 +146,25 @@ def generate_pose_array(image_folder_path):
     for image in os.listdir(image_folder_path):
         pose_arr.append(generate_landmarks(os.path.join(image_folder_path, image)))
     return pose_arr
+
+def generate_name_array(image_folder_path):
+    name_arr = []
+    for image in os.listdir(image_folder_path):
+        name_arr.append(image)
+    return name_arr
+
+def save_name_arr(image_folder_path, save_path):
+    # save the array of names of the images in the folder in json format
+    name_arr = generate_name_array(image_folder_path)
+    with open(save_path, 'w') as f:
+        json.dump(name_arr, f)
+    return name_arr
+
+def load_name_array(name_arr_path):
+    # name_arr_path is the path of the file that contains the array of names of the images in the folder
+    # return the array of names of the images in the folder
+    with open(name_arr_path, 'r') as f:
+        return json.load(f)
 
 def save_pos_arr(image_folder_path, save_path):
     # Generate an array of arrays of landmarks of the poses
@@ -171,3 +190,4 @@ def most_similar_pose(pose, pose_arr):
             result = i
 
     return result
+
