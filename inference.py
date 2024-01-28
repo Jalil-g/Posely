@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import PIL as Image
-from data_transformation.landmark_utils import most_similar_pose, draw_landmarks, generate_pose_array
+from data_transformation.landmark_utils import most_similar_pose, draw_landmarks, load_pose_array
 
 def predict(model, image_path):
     model.eval()
@@ -32,8 +32,7 @@ def predict(model, image_path):
         prediction = model(image)
         prediction = prediction.cpu().numpy()
 
-    # TODO: Generate and store poses array in a file
-    pose_array = generate_pose_array("data/poses")
+    pose_array = load_pose_array("data/poses")
 
     most_similar = most_similar_pose(prediction, pose_array)
     draw_landmarks(image_path, most_similar)

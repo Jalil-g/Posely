@@ -65,7 +65,8 @@ def draw_landmarks(image_path,land_arr):
             # Write the coordinates on the image
             cv2.putText(image_frame_rgb, f"({a:.2f}, {b:.2f})", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
 
-        #Draw lines between the connected landmarks
+        # Draw lines between the connected landmarks
+        # TODO: Make the lines of different colors for different body parts
         for i, j in connections:
             x1, y1, _ = (land_arr[i] * [480, 480, 1]).astype(int)
             x2, y2, _ = (land_arr[j] * [480, 480, 1]).astype(int)
@@ -86,6 +87,19 @@ def generate_pose_array(image_folder_path):
         pose_arr.append(generate_landmarks(os.path.join(image_folder_path, image)))
     return pose_arr
 
+def save_pos_arr(image_folder_path, save_path):
+    # Generate an array of arrays of landmarks of the poses
+    # image_folder_path is the path of the folder that contains the images of the poses
+    # return the array of arrays of landmarks of the poses
+    pose_arr = generate_pose_array(image_folder_path)
+    np.save(save_path, pose_arr)
+    return pose_arr
+
+def load_pose_array(pose_arr_path):
+    # pose_arr_path is the path of the file that contains the array of arrays of landmarks of the poses
+    # return the array of arrays of landmarks of the poses
+    return np.load(pose_arr_path)
+
 def most_similar_pose(pose, pose_arr):
     # pose is the array of landmarks of the image
     # pose_arr is the array of arrays of landmarks of the poses
@@ -96,6 +110,7 @@ def most_similar_pose(pose, pose_arr):
             result = i
 
     return result
+
 
 if __name__ == "__main__":
     arr = generate_landmarks('unsplash.jpg')
