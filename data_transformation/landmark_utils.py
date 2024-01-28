@@ -102,7 +102,7 @@ def draw_landmarks(image_path,land_arr):
         cv2.destroyAllWindows()
 
         return land_arr
-
-arr = generate_landmarks('unsplash.jpg')
-print(arr.shape,arr.dtype, arr)
-draw_landmarks('unsplash.jpg',arr)
+if __name__ == "__main__":
+    arr = generate_landmarks('unsplash.jpg')
+    print(arr.shape,arr.dtype, arr)
+    draw_landmarks('unsplash.jpg',arr)
