@@ -1,6 +1,6 @@
 # Posely - AI Pose Suggestion App
 
-<div style="display: flex; justify-content: center;">
+<div style="display: flex; justify-content: center; align-items:center">
     <img src="https://github.com/Jalil-g/Posely/blob/main/logo.png?raw=true" alt="Posely Logo" width="250" height="250">
 </div>
 
