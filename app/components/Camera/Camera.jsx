@@ -1,7 +1,7 @@
 import { Camera, CameraType } from 'expo-camera';
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button, ActivityIndicator } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { sendImage } from '../../utils';
 
@@ -10,6 +10,7 @@ export default function CameraComponent({ navigation }) {
     const [type, setType] = useState(CameraType.back);
     const [clicked, setClicked] = useState(false);
     const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [permission, requestPermission] = Camera.useCameraPermissions();
 
     if (!permission) {
@@ -33,11 +34,15 @@ export default function CameraComponent({ navigation }) {
 
     const takePicture = async () => {
         if (cameraRef.current) {
+            setLoading(true);
             const data = await cameraRef.current.takePictureAsync({ base64: true });
             setClicked(true);
             setImage(data.uri);
-            await sendImage(data.uri);
-            navigation.navigate('Home', { base64: data.base64, uri: data.uri });
+            const response = await sendImage(data.uri);
+            console.log(response);
+            setLoading(false);
+            setImage("data:image/jpeg;base64," + response.base64);
+            //navigation.navigate('Home', { base64: data.base64, uri: data.uri });
         }
     }
 
@@ -58,6 +63,12 @@ export default function CameraComponent({ navigation }) {
                     <Button mode="contained" onPress={() => { setClicked(false); setImage(null); }}>X</Button>
                     <Image source={{ uri: image }} style={{ flex: 1 }} />
                 </>}
+                {loading &&
+                    <View style={styles.loading}>
+                        <Text style={{ fontSize: 20, fontWeight: "bold", color: "#663399", alignSelf: "center" }}>Coming up with some cool poses...</Text>
+                        <ActivityIndicator size='large' />
+                    </View>
+                }
             </Camera>
         </View>
     );
@@ -86,4 +97,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
     },
+    loading: {
+        flex: 1,
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 });
