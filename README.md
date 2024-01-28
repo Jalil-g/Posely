@@ -1,4 +1,4 @@
-# PoseLY - AI Pose Suggestion App
+# Posely - AI Pose Suggestion App
 
 ![Posely Logo](link_to_your_logo)
 
