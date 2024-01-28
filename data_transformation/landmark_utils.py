@@ -105,6 +105,7 @@ def most_similar_pose(pose, pose_arr):
     # pose_arr is the array of arrays of landmarks of the poses
     # return the index of the most similar pose
     result = 0
+    pose = np.reshape(pose, (13, 3))
     for i in range(len(pose_arr)):
         if np.linalg.norm(pose - pose_arr[i]) < np.linalg.norm(pose - pose_arr[result]):
             result = i

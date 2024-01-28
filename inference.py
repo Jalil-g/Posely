@@ -1,10 +1,55 @@
 import torch
 import numpy as np
-import PIL as Image
-from data_transformation.landmark_utils import most_similar_pose, draw_landmarks, load_pose_array
+from PIL import Image
+from data_transformation.landmark_utils import most_similar_pose, draw_landmarks, load_pose_array, save_pos_arr
+
+import torch.nn as nn
+from torch.optim import Adam
+from data_transformation import dataset_loader
+import torch.functional as F
+import numpy as np
+
+class PoseAdvisor(nn.Module):
+    def __init__(self):
+        super(PoseAdvisor, self).__init__()
+        self.conv2d = nn.Conv2d(1, 32, (3, 3), padding=1)
+        self.pool = nn.MaxPool2d((2, 2), stride=2)
+        self.relu = nn.ReLU()
+        self.conv2d_1 = nn.Conv2d(32, 64, (3, 3), padding=1)
+        self.flatten = nn.Flatten()
+        self.linear = nn.Linear(262144, 2056)
+        self.linear2 = nn.Linear(2056, 256)
+        self.dropout = nn.Dropout(0.2)
+        self.linear3 = nn.Linear(256, 39)
+
+    def forward(self, x):
+        # print("INPUT", x.shape)
+        x = self.conv2d(x)
+        x = self.relu(x)
+        x = self.pool(x)
+        # print("LAYER 1", x.shape)
+        x = self.conv2d_1(x)
+        x = self.relu(x)
+        x = self.pool(x)
+        # print("LAYER 2", x.shape)
+        x = self.flatten(x)
+        x = self.linear(x)
+        x = self.relu(x)
+        # print("LAYER 3", x.shape)
+        x = self.linear2(x)
+        x = self.relu(x)
+        # print("LAYER 4", x.shape)
+        x = self.linear3(x)
+        x = self.dropout(x)
+        # print("LAYER 5", x.shape)
+
+        return x
+
+model = PoseAdvisor()
+model.load_state_dict(torch.load("models/model3.pth"))
 
 def predict(model, image_path):
-    model.eval()
+    # model.eval()
     # Get the image from the image path
     image = Image.open(image_path)
 
@@ -32,8 +77,12 @@ def predict(model, image_path):
         prediction = model(image)
         prediction = prediction.cpu().numpy()
 
-    pose_array = load_pose_array("data/poses")
+    # save_pos_arr("images", "models/pose_arr.npy")
+    pose_array = load_pose_array("models/pose_arr.npy")
 
     most_similar = most_similar_pose(prediction, pose_array)
-    draw_landmarks(image_path, most_similar)
+    draw_landmarks(image_path, pose_array[most_similar])
     return prediction, most_similar
+
+if __name__ == "__main__":
+    print(predict(model, "images/image_0a44441976e54061bff66a297255781e.jpg"))
