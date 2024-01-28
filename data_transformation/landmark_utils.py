@@ -103,7 +103,6 @@ def draw_landmarks(image_path,land_arr):
 
         return land_arr
 if __name__ == "__main__":
-    
     arr = generate_landmarks('unsplash.jpg')
     print(arr.shape,arr.dtype, arr)
     draw_landmarks('unsplash.jpg',arr)
