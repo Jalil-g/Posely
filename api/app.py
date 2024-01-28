@@ -3,10 +3,17 @@ from flask_cors import CORS
 import base64
 from PIL import Image
 from io import BytesIO
-from data_transformation.landmark_utils import scale_image, draw_landmarks
+from inference import predict
+from data_transformation.landmark_utils import draw_landmarks
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+
+def convert_to_base64(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+        return encoded_string.decode('utf-8')
 
 @app.route('/', methods=['OPTIONS'])
 def handle_options():
@@ -31,17 +38,12 @@ def upload_image():
 
         image.save(image_path)
         #scale_image("static/img1.jpeg", image_path)
-        draw_landmarks("static/img1.jpeg")
-
+        prediction, predicted_image = predict(image_path)
+        predicted_image_path = os.path.join('..', 'images', predicted_image)
         processed_image_path = 'static/processed_image.jpg'
+        draw_landmarks(predicted_image_path, [], "static/labeled_prediction.jpg")
         # Read the image file
-        with open(processed_image_path, 'rb') as image_file:
-            image_data = image_file.read()
-
-        # Convert the image data to base64
-        base64_image = base64.b64encode(image_data).decode('utf-8')
-        print(base64_image[:10])
-        return jsonify({"base64": base64_image})  #jsonify({"message": "Image uploaded and processed successfully", "image_path": processed_image_path})
+        return jsonify({"labeled": convert_to_base64(processed_image_path), "prediction": convert_to_base64(predicted_image_path), "labeled_prediction": convert_to_base64( "static/labeled_prediction.jpg")})  #jsonify({"message": "Image uploaded and processed successfully", "image_path": processed_image_path})
     except Exception as e:
         return jsonify({"error": str(e)})
 

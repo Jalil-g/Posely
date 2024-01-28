@@ -1,7 +1,8 @@
 import torch
+import os
 import numpy as np
 from PIL import Image
-from data_transformation.landmark_utils import most_similar_pose, draw_landmarks, load_pose_array, save_pos_arr
+from data_transformation.landmark_utils import most_similar_pose, draw_landmarks, load_pose_array, save_pos_arr, scale_image_predict
 
 import torch.nn as nn
 from torch.optim import Adam
@@ -46,10 +47,10 @@ class PoseAdvisor(nn.Module):
         return x
 
 model = PoseAdvisor()
-model.load_state_dict(torch.load("models/model3.pth"), map_location=torch.device('cpu'))
+model.load_state_dict(torch.load("models/model3.pth", map_location=torch.device('cpu')))
 
-def predict(model, image_path):
-    # model.eval()
+def predict(image_path, model=model):
+    # model.eval()``
     # Get the image from the image path
     image = Image.open(image_path)
 
@@ -79,10 +80,13 @@ def predict(model, image_path):
 
     # save_pos_arr("images", "models/pose_arr.npy")
     pose_array = load_pose_array("models/pose_arr.npy")
-
     most_similar = most_similar_pose(prediction, pose_array)
+    print(pose_array[most_similar])
+    print(prediction)
     draw_landmarks(image_path, pose_array[most_similar])
-    return prediction, most_similar
+    images = os.listdir("../images")
+    print(len(images), pose_array.shape)
+    return prediction, images[most_similar]
 
-if __name__ == "__main__":
-    print(predict(model, "static/img1.jpeg"))
+# if __name__ == "__main__":
+#     print(predict(model, "static/image.jpg"))

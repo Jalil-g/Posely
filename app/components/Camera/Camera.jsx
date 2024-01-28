@@ -1,7 +1,7 @@
 import { Camera, CameraType } from 'expo-camera';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-import { Button, ActivityIndicator } from 'react-native-paper';
+import { StyleSheet, TouchableOpacity, View, Image } from 'react-native';
+import { Button, ActivityIndicator, Modal, Portal, Text, PaperProvider } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { sendImage } from '../../utils';
 
@@ -10,8 +10,15 @@ export default function CameraComponent({ navigation }) {
     const [type, setType] = useState(CameraType.back);
     const [clicked, setClicked] = useState(false);
     const [image, setImage] = useState(null);
+    const [prediction, setPrediction] = useState(null);
+    const [labeledPrediction, setLabeledPrediction] = useState(null);
     const [loading, setLoading] = useState(false);
     const [permission, requestPermission] = Camera.useCameraPermissions();
+    const [visible, setVisible] = useState(false);
+
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
+    const containerStyle = { padding: 20 };
 
     if (!permission) {
         // Camera permissions are still loading
@@ -39,9 +46,11 @@ export default function CameraComponent({ navigation }) {
             setClicked(true);
             setImage(data.uri);
             const response = await sendImage(data.uri);
-            console.log(response);
+            // console.log(response);
             setLoading(false);
-            setImage("data:image/jpeg;base64," + response.base64);
+            setImage("data:image/jpeg;base64," + response.labeled);
+            setPrediction("data:image/jpeg;base64," + response.prediction);
+            setLabeledPrediction("data:image/jpeg;base64," + response.labeled_prediction);
             //navigation.navigate('Home', { base64: data.base64, uri: data.uri });
         }
     }
@@ -60,7 +69,24 @@ export default function CameraComponent({ navigation }) {
                     </View>
                 </>}
                 {clicked && <>
-                    <Button mode="contained" onPress={() => { setClicked(false); setImage(null); }}>X</Button>
+                    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, flex: 1, padding: 5, alignItems: "flex-end", justifyContent: "center", zIndex: 999 }}>
+                        <TouchableOpacity style={styles.button} onPress={() => { setClicked(false); setImage(null); setPrediction(null); }}>
+                            <MaterialCommunityIcons name="close-circle" color={"#fff"} size={40} />
+                        </TouchableOpacity>
+                        <View style={{ flex: 1, width: "100%", marginTop: 10 }}>
+                            <PaperProvider>
+                                <Portal>
+                                    <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+                                        <Image source={{ uri: prediction }} style={{ width: "100%", height: "90%", marginBottom: 3 }} />
+                                        <Button mode="contained" onPress={() => {setPrediction(labeledPrediction)}}>See landmarks</Button>
+                                    </Modal>
+                                </Portal>
+                                <TouchableOpacity style={styles.button} onPress={showModal}>
+                                    <Image source={{ uri: prediction }} style={{ height: 60, width: 60, borderColor: "white", borderWidth: 1, ...styles.imageShadow }} />
+                                </TouchableOpacity>
+                            </PaperProvider>
+                        </View>
+                    </View>
                     <Image source={{ uri: image }} style={{ flex: 1 }} />
                 </>}
                 {loading &&
@@ -106,5 +132,14 @@ const styles = StyleSheet.create({
         bottom: 0,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    imageShadow: {
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.36,
+        shadowRadius: 6.68,
     }
 });
