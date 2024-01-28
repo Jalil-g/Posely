@@ -21,5 +21,30 @@ PoseLY is an innovative application that utilizes artificial intelligence to sug
 ### Installation
 
 1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/posely.git
+2.  Navigate to the 'app' directory inside the repo:
+   ``` bash
+      cd Posely/app
+```
+3. Install required packages and start the frontend server (you will need the Expo app and npx installed on your device (preferably Expo app on your phone as well)
+```bash
+   npm install
+   npm start
+```
+
+4. Navigate to the 'api' directory inside the repo:
+```bash
+    cd Posely/api
+```
+
+5. Install necessary packages for backend, and activate virtual environment (optional)
+```bash
+    pip install -r requirements.txt
+    env/Scripts/activate
+```
+
+6. Run the app
+```bash
+    py app.py
+```
+
+
