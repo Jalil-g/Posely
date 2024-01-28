@@ -4,8 +4,8 @@ from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 from PIL import Image
 import numpy as np
-from . import landmark_utils
-# import landmark_utils
+# from . import landmark_utils
+import landmark_utils
 
 
 def resize_and_convert_to_bw_both(input_path):

@@ -2,12 +2,9 @@ import torch
 import os
 import numpy as np
 from PIL import Image
-from data_transformation.landmark_utils import most_similar_pose, draw_landmarks, load_pose_array, load_name_array, save_pos_arr, scale_image_predict
+from api.data_transformation.landmark_utils import most_similar_pose, draw_landmarks, load_pose_array, load_name_array, save_pos_arr, scale_image_predict, generate_landmarks
 
 import torch.nn as nn
-from torch.optim import Adam
-from data_transformation import dataset_loader
-import torch.functional as F
 import numpy as np
 
 class PoseAdvisor(nn.Module):
@@ -83,13 +80,20 @@ def predict(image_path, model=model):
     pose_array = load_pose_array("models/pose_arr.npy")
     name_array = load_name_array("models/name_arr.json")
 
-    most_similar = most_similar_pose(prediction, pose_array)
-    draw_landmarks(image_path, pose_array[most_similar])
+    # get the pose from the image itself as well
+    land_arr = generate_landmarks(image_path)
+    land_arr = np.reshape(land_arr, (39,))
+
+    most_similar1 = most_similar_pose(prediction, pose_array)
+    draw_landmarks(image_path, pose_array[most_similar1])
+
+    most_similar2 = most_similar_pose(land_arr, pose_array)
+    draw_landmarks(image_path, pose_array[most_similar2])
 
     images = os.listdir("../images")
     print(len(images), pose_array.shape)
-    return prediction, name_array[most_similar]
+    return prediction, name_array[most_similar1], np.reshape(pose_array[most_similar2], (39,)), name_array[most_similar2]
 
 
-# if __name__ == "__main__":
-#     print(predict(model, "images/sample_004.jpeg"))
+if __name__ == "__main__":
+    print(predict("E:/AI/mchacks/images/sample_004.jpeg", model=model))
