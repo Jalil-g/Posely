@@ -1,6 +1,6 @@
 # Posely - AI Pose Suggestion App
 
-![Posely Logo](https://github.com/Jalil-g/Posely/blob/main/logo.png?raw=true =100x)
+<img src="https://github.com/Jalil-g/Posely/blob/main/logo.png?raw=true" alt="Posely Logo" width="100">
 
 PoseLY is an innovative application that utilizes artificial intelligence to suggest poses for your pictures. Whether you're a model, photographer, or someone who just wants to capture the perfect moment, Pose;y is here to help you strike the ideal pose.
 
