@@ -39,7 +39,7 @@ PoseLY is an innovative application that utilizes artificial intelligence to sug
    ``` bash
       cd Posely/app
 ```
-3. Install required packages and start the frontend server (you will need the Expo app and npx installed on your device (preferably Expo app on your phone as well)
+3. Install required packages and start the frontend server (you will need the [Expo](https://expo.dev/) app and [npm](https://www.npmjs.com/package/npx) installed on your device (preferably Expo app on your phone as well)
 ```bash
    npm install
    npm start
