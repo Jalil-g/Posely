@@ -4,8 +4,8 @@ from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 from PIL import Image
 import numpy as np
-# from . import landmark_utils
-import landmark_utils
+from . import landmark_utils
+# import landmark_utils
 
 
 def resize_and_convert_to_bw_both(input_path):
@@ -44,7 +44,8 @@ class CustomDataset(Dataset):
         # Convert image to a numpy array
         image_array = landmark_utils.generate_landmarks(image_path)
         if (type(image_array) == int):
-            return (None, None)
+            print("ERROR: LANDMARK NOT DETECTED")
+            return None
         else:
             image_array = image_array.flatten()
 
@@ -63,11 +64,11 @@ class CustomDataset(Dataset):
 def dataload_create(image_folder_path):
     custom_dataset = CustomDataset(image_folder_path)
     # print(len(custom_dataset))
-    train_dataset, test_dataset = torch.utils.data.random_split(custom_dataset, [1000, 1]) # 80% train, 20% test
+    train_dataset, test_dataset = torch.utils.data.random_split(custom_dataset, [894, 1]) # 80% train, 20% test
     # print(len(train_dataset))
     # print(len(test_dataset))
-    train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=1, shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True)
     return train_dataloader, test_dataloader
 
 if __name__ == "__main__":
