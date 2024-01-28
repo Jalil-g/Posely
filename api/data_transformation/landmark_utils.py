@@ -41,8 +41,27 @@ def generate_landmarks(image_path):
 
         return land_arr
 
+def draw_blank_image(image_path):
+    image_frame = cv2.imread(image_path)
+    transparent_img = np.zeros((image_frame.shape[0], image_frame.shape[1], 4), dtype=np.uint8)
+    land_arr = generate_landmarks(image_path)
+    
+    for i, landmark in enumerate(land_arr):
+        # Convert the relative coordinates to absolute coordinates
+        x, y, _ = (landmark * [image_frame.shape[1], image_frame.shape[0], 1]).astype(int)
+        # Draw a small circle at each landmark position
+        cv2.circle(transparent_img, (x, y), 5, (0, 255, 0, 255), -1)
+        
+    #Draw lines between the connected landmarks
+    for i, j in connections:
+        if not ((land_arr[i][0] == 0 and land_arr[i][1] == 0) or (land_arr[j][0] == 0 and land_arr[j][1] == 0)):
+            x1, y1, _ = (land_arr[i] * [image_frame.shape[1], image_frame.shape[0], 1]).astype(int)
+            x2, y2, _ = (land_arr[j] * [image_frame.shape[1], image_frame.shape[0], 1]).astype(int)
+            cv2.line(transparent_img, (x1, y1), (x2, y2), (255, 0, 0, 255), 5)
 
-def draw_landmarks(image_path, land_arr = [], write_image_path="static/processed_image.jpg"):
+    cv2.imwrite("static/transparent.png", transparent_img)
+
+def draw_landmarks(image_path, land_arr = [], write_image_path="static/processed_image.jpg", blank=False):
         if len(land_arr) == 0:
             land_arr = generate_landmarks(image_path)
         image_frame = cv2.imread(image_path)

@@ -11,14 +11,16 @@ export default function CameraComponent({ navigation }) {
     const [clicked, setClicked] = useState(false);
     const [image, setImage] = useState(null);
     const [prediction, setPrediction] = useState(null);
-    const [labeledPrediction, setLabeledPrediction] = useState(null);
+    // const [labeledPrediction, setLabeledPrediction] = useState(null);
+    const [modalImage, setModalImage] = useState(null); 
+    const [transparent, setTransparent] = useState(null);
     const [loading, setLoading] = useState(false);
     const [permission, requestPermission] = Camera.useCameraPermissions();
     const [visible, setVisible] = useState(false);
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
-    const containerStyle = { padding: 20 };
+    const containerStyle = { padding: 20, zIndex: 10000};
 
     if (!permission) {
         // Camera permissions are still loading
@@ -50,7 +52,9 @@ export default function CameraComponent({ navigation }) {
             setLoading(false);
             setImage("data:image/jpeg;base64," + response.labeled);
             setPrediction("data:image/jpeg;base64," + response.prediction);
-            setLabeledPrediction("data:image/jpeg;base64," + response.labeled_prediction);
+            // setLabeledPrediction("data:image/jpeg;base64," + response.labeled_prediction);
+            setTransparent("data:image/png;base64," + response.transparent);
+            setModalImage("data:image/jpeg;base64," + response.prediction);
             //navigation.navigate('Home', { base64: data.base64, uri: data.uri });
         }
     }
@@ -58,17 +62,54 @@ export default function CameraComponent({ navigation }) {
     return (
         <View style={styles.container}>
             <Camera ref={cameraRef} style={styles.camera} type={type}>
-                {!clicked && <>
-                    <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+                    {clicked && <>
+                        <Image source={{ uri: prediction }} style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, opacity: 0.3, justifyContent: "center", alignItems: "center", width: "100%", height: "100%", zIndex: 999 }} />
+                        <Image source={{ uri: transparent }} style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, justifyContent: "center", alignItems: "center", width: "100%", height: "100%", zIndex: 999 }} />
+                    </>}
+                    {!visible && <>
+                        <TouchableOpacity style={{alignSelf: "flex-start", zIndex: 999}} onPress={toggleCameraType}>
                         <MaterialCommunityIcons name="camera-flip" color={"#fff"} size={40} />
                     </TouchableOpacity>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.button} onPress={takePicture}>
                             <MaterialCommunityIcons name="circle-slice-8" color={"#fff"} size={80} />
                         </TouchableOpacity>
+                        </View>
+
+                        </>}
+                    {clicked && <>
+                    <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, flex: 1, padding: 5, alignItems: "flex-end", justifyContent: "center", zIndex: 999 }}>
+                        <TouchableOpacity style={styles.button} onPress={() => { setClicked(false); setImage(null); setPrediction(null); }}>
+                            <MaterialCommunityIcons name="close-circle" color={"#fff"} size={40} />
+                        </TouchableOpacity>
+                        <View style={{ flex: 1, width: "100%", marginTop: 10 }}>
+                            <PaperProvider>
+                                <Portal>
+                                    <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+                                        <Image source={{ uri: modalImage }} style={{ width: "100%", height: "90%", marginBottom: 3 }} />
+                                        <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
+                                        <Button mode="contained" onPress={() => {setModalImage(prediction)}}>Cool pose</Button>
+                                        <Button mode="contained" onPress={() => {setModalImage(image)}}>Your pic</Button>
+                                        </View>
+                                    </Modal>
+                                </Portal>
+                                <TouchableOpacity style={styles.button} onPress={showModal}>
+                                    <Image source={{ uri: prediction }} style={{ height: 60, width: 60, borderColor: "white", borderWidth: 1, ...styles.imageShadow }} />
+                                </TouchableOpacity>
+                            </PaperProvider>
+                        </View>
                     </View>
                 </>}
-                {clicked && <>
+
+                    {loading &&
+                    <View style={styles.loading}>
+                        <Text style={{ fontSize: 20, fontWeight: "bold", color: "#663399", alignSelf: "center", zIndex: 999 }}>Coming up with some cool poses...</Text>
+                        <ActivityIndicator size='large' style={{zIndex: 9999}} />
+                        <Image source={{ uri: image }} style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, justifyContent: "center", alignItems: "center", width: "100%", height: "100%" }} />
+                    </View>
+                }
+    
+                {/* {clicked && <>
                     <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, flex: 1, padding: 5, alignItems: "flex-end", justifyContent: "center", zIndex: 999 }}>
                         <TouchableOpacity style={styles.button} onPress={() => { setClicked(false); setImage(null); setPrediction(null); }}>
                             <MaterialCommunityIcons name="close-circle" color={"#fff"} size={40} />
@@ -88,13 +129,7 @@ export default function CameraComponent({ navigation }) {
                         </View>
                     </View>
                     <Image source={{ uri: image }} style={{ flex: 1 }} />
-                </>}
-                {loading &&
-                    <View style={styles.loading}>
-                        <Text style={{ fontSize: 20, fontWeight: "bold", color: "#663399", alignSelf: "center" }}>Coming up with some cool poses...</Text>
-                        <ActivityIndicator size='large' />
-                    </View>
-                }
+                </>} */}
             </Camera>
         </View>
     );
@@ -114,9 +149,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         backgroundColor: 'transparent',
         margin: 64,
+        zIndex: 1000
     },
     button: {
         alignSelf: 'flex-end',
+        zIndex: 10000
     },
     text: {
         fontSize: 24,

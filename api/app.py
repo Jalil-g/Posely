@@ -4,7 +4,7 @@ import base64
 from PIL import Image
 from io import BytesIO
 from inference import predict
-from data_transformation.landmark_utils import draw_landmarks
+from data_transformation.landmark_utils import draw_landmarks,  draw_blank_image
 import os
 
 app = Flask(__name__)
@@ -41,9 +41,10 @@ def upload_image():
         prediction, predicted_image = predict(image_path)
         predicted_image_path = os.path.join('..', 'images', predicted_image)
         processed_image_path = 'static/processed_image.jpg'
-        draw_landmarks(predicted_image_path, [], "static/labeled_prediction.jpg")
+        #draw_landmarks(predicted_image_path, [], "static/labeled_prediction.jpg")
+        draw_blank_image(predicted_image_path)
         # Read the image file
-        return jsonify({"labeled": convert_to_base64(processed_image_path), "prediction": convert_to_base64(predicted_image_path), "labeled_prediction": convert_to_base64( "static/labeled_prediction.jpg")})  #jsonify({"message": "Image uploaded and processed successfully", "image_path": processed_image_path})
+        return jsonify({"labeled": convert_to_base64(processed_image_path), "prediction": convert_to_base64(predicted_image_path), "transparent": convert_to_base64("static/transparent.png")})  #jsonify({"message": "Image uploaded and processed successfully", "image_path": processed_image_path})
     except Exception as e:
         return jsonify({"error": str(e)})
 
