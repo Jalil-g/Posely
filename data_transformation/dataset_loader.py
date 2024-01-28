@@ -1,12 +1,13 @@
 import os
 import torch
+from torchvision import transforms
+from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 from PIL import Image
 import numpy as np
-from torch.utils.data import DataLoader
-import landmark_utils
+from . import landmark_utils
+# import landmark_utils
 
-image_folder_path = "./images"
 
 def resize_and_convert_to_bw_both(input_path):
     # Open the image using Pillow
@@ -19,6 +20,8 @@ def resize_and_convert_to_bw_both(input_path):
     bw_pil_image = resized_pil_image.convert("L")
     
     return bw_pil_image
+
+
 
 class CustomDataset(Dataset):
     def __init__(self, image_folder_path, transform=None):
@@ -38,19 +41,42 @@ class CustomDataset(Dataset):
 
         # Convert image to a numpy array
         image_array = landmark_utils.generate_landmarks(image_path)
+        if (type(image_array) == int):
+            image_array = np.zeros(39)
+        else:
+            image_array = image_array.flatten()
+
+        bw_pil_image = np.array(bw_pil_image, dtype=np.float32)
 
         # Apply transformations if provided
         if self.transform:
             bw_pil_image = self.transform(bw_pil_image)
+        bw_pil_image = torch.tensor(bw_pil_image, dtype=torch.float32)
+        bw_pil_image = bw_pil_image.unsqueeze(0)
+        # print("---------------------- PIL IMAGE ----------------------")
+        # print(bw_pil_image.shape)
+
             # You can apply transformations to bw_cv2_array if needed
 
-        return bw_pil_image, image_array
+        # print(type(bw_pil_image), bw_pil_image)
+        # print(type(image_array), image_array)
 
-custom_dataset = CustomDataset(image_folder_path)
-print(len(custom_dataset))
-train_dataset, test_dataset = torch.utils.data.random_split(custom_dataset, [800, 201]) # 80% train, 20% test
-print(len(train_dataset))
-print(len(test_dataset))
+        return (bw_pil_image, image_array)
+    
+def dataload_create(image_folder_path):
+    custom_dataset = CustomDataset(image_folder_path)
+    # print(len(custom_dataset))
+    train_dataset, test_dataset = torch.utils.data.random_split(custom_dataset, [800, 201]) # 80% train, 20% test
+    # print(len(train_dataset))
+    # print(len(test_dataset))
+    train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=True)
+    return train_dataloader, test_dataloader
 
-train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=True)
+if __name__ == "__main__":
+    train, test = dataload_create("../images")
+    for i, (bw_pil_image, image_array) in enumerate(train):
+        print(i, bw_pil_image.shape, image_array.shape)
+        print(bw_pil_image)
+        if i == 20:
+            break
