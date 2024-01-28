@@ -1,6 +1,6 @@
 import { Camera, CameraType } from 'expo-camera';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { sendImage } from '../../utils';
@@ -8,6 +8,8 @@ import { sendImage } from '../../utils';
 export default function CameraComponent({ navigation }) {
     const cameraRef = useRef(null);
     const [type, setType] = useState(CameraType.back);
+    const [clicked, setClicked] = useState(false);
+    const [image, setImage] = useState(null);
     const [permission, requestPermission] = Camera.useCameraPermissions();
 
     if (!permission) {
@@ -32,7 +34,9 @@ export default function CameraComponent({ navigation }) {
     const takePicture = async () => {
         if (cameraRef.current) {
             const data = await cameraRef.current.takePictureAsync({ base64: true });
-            await sendImage(data.base64);
+            setClicked(true);
+            setImage(data.uri);
+            await sendImage(data.uri);
             navigation.navigate('Home', { base64: data.base64, uri: data.uri });
         }
     }
@@ -40,14 +44,20 @@ export default function CameraComponent({ navigation }) {
     return (
         <View style={styles.container}>
             <Camera ref={cameraRef} style={styles.camera} type={type}>
-                <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-                    <MaterialCommunityIcons name="camera-flip" color={"#fff"} size={40} />
-                </TouchableOpacity>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={takePicture}>
-                        <MaterialCommunityIcons name="circle-slice-8" color={"#fff"} size={80} />
+                {!clicked && <>
+                    <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
+                        <MaterialCommunityIcons name="camera-flip" color={"#fff"} size={40} />
                     </TouchableOpacity>
-                </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.button} onPress={takePicture}>
+                            <MaterialCommunityIcons name="circle-slice-8" color={"#fff"} size={80} />
+                        </TouchableOpacity>
+                    </View>
+                </>}
+                {clicked && <>
+                    <Button mode="contained" onPress={() => { setClicked(false); setImage(null); }}>X</Button>
+                    <Image source={{ uri: image }} style={{ flex: 1 }} />
+                </>}
             </Camera>
         </View>
     );
