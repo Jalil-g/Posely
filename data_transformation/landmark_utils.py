@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import os
+import json
 
 mp_pose = mp.solutions.pose
 
@@ -86,6 +87,25 @@ def generate_pose_array(image_folder_path):
     for image in os.listdir(image_folder_path):
         pose_arr.append(generate_landmarks(os.path.join(image_folder_path, image)))
     return pose_arr
+
+def generate_name_array(image_folder_path):
+    name_arr = []
+    for image in os.listdir(image_folder_path):
+        name_arr.append(image)
+    return name_arr
+
+def save_name_arr(image_folder_path, save_path):
+    # save the array of names of the images in the folder in json format
+    name_arr = generate_name_array(image_folder_path)
+    with open(save_path, 'w') as f:
+        json.dump(name_arr, f)
+    return name_arr
+
+def load_name_array(name_arr_path):
+    # name_arr_path is the path of the file that contains the array of names of the images in the folder
+    # return the array of names of the images in the folder
+    with open(name_arr_path, 'r') as f:
+        return json.load(f)
 
 def save_pos_arr(image_folder_path, save_path):
     # Generate an array of arrays of landmarks of the poses
