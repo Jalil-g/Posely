@@ -91,5 +91,6 @@ def predict(model, image_path):
     image.show()
     return prediction, most_similar
 
+
 if __name__ == "__main__":
-    print(predict(model, "images/image_fe65dfcfb537400f8e67a0aa93540778.jpg"))
+    print(predict(model, "images/sample_004.jpeg"))
