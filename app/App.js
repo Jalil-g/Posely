@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeStackNavigator from './components/StackNavigator/StackNavigator';
 
 const Tab = createMaterialBottomTabNavigator();
@@ -11,7 +10,7 @@ const Tab = createMaterialBottomTabNavigator();
 export default function App() {
   return (
    <NavigationContainer>
-       <HomeStackNavigator/>
+      <HomeStackNavigator />
       <StatusBar style="auto" />
    </NavigationContainer>
   );
