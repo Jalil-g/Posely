@@ -134,20 +134,15 @@ def draw_landmark_from_array(
     image_rows, image_cols, _ = image.shape
     idx_to_coordinates = {}
     delete_landmarks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 17, 18, 19, 20, 21, 22]
-    for idx, landmark in enumerate(landmark_list.landmark):
-        if idx in delete_landmarks:
-            continue
-        if ((landmark.HasField('visibility') and
-             landmark.visibility < _VISIBILITY_THRESHOLD) or
-                (landmark.HasField('presence') and
-                 landmark.presence < _PRESENCE_THRESHOLD)):
-            continue
-        landmark_px = _normalized_to_pixel_coordinates(landmark.x, landmark.y,
+    for i in range(0, len(landmark_list)):
+        landmark = landmark_list[i]
+        idx = i
+        landmark_px = _normalized_to_pixel_coordinates(landmark[0], landmark[1],
                                                        image_cols, image_rows)
         if landmark_px:
             idx_to_coordinates[idx] = landmark_px
     if connections:
-        num_landmarks = len(landmark_list.landmark)
+        num_landmarks = len(landmark_list)
         # Draws the connections if the start and end landmarks are both visible.
         for connection in connections:
             start_idx = connection[0]

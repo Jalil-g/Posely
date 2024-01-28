@@ -1,23 +1,25 @@
 import os
 import torch
-from torchvision import transforms
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 from PIL import Image
 import numpy as np
-from . import landmark_utils
-# import landmark_utils
+# from . import landmark_utils
+import landmark_utils
 
 
 def resize_and_convert_to_bw_both(input_path):
     # Open the image using Pillow
     pil_image = Image.open(input_path)
 
-    # Resize the image to 480x480 pixels using Pillow
+    # Resize the image to 256x256 pixels using Pillow
     resized_pil_image = pil_image.resize((256, 256))
 
     # Convert the Pillow image to black and white
     bw_pil_image = resized_pil_image.convert("L")
+
+    # Normalize the image
+    bw_pil_image = np.array(bw_pil_image, dtype=np.float32) / 255.0
     
     return bw_pil_image
 
@@ -42,15 +44,10 @@ class CustomDataset(Dataset):
         # Convert image to a numpy array
         image_array = landmark_utils.generate_landmarks(image_path)
         if (type(image_array) == int):
-            image_array = np.zeros(39)
+            return (None, None)
         else:
             image_array = image_array.flatten()
 
-        bw_pil_image = np.array(bw_pil_image, dtype=np.float32)
-
-        # Apply transformations if provided
-        if self.transform:
-            bw_pil_image = self.transform(bw_pil_image)
         bw_pil_image = torch.tensor(bw_pil_image, dtype=torch.float32)
         bw_pil_image = bw_pil_image.unsqueeze(0)
         # print("---------------------- PIL IMAGE ----------------------")
@@ -66,7 +63,7 @@ class CustomDataset(Dataset):
 def dataload_create(image_folder_path):
     custom_dataset = CustomDataset(image_folder_path)
     # print(len(custom_dataset))
-    train_dataset, test_dataset = torch.utils.data.random_split(custom_dataset, [800, 201]) # 80% train, 20% test
+    train_dataset, test_dataset = torch.utils.data.random_split(custom_dataset, [1000, 1]) # 80% train, 20% test
     # print(len(train_dataset))
     # print(len(test_dataset))
     train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
