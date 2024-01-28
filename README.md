@@ -17,7 +17,7 @@ PoseLY is an innovative application that utilizes artificial intelligence to sug
 
 - [Python](https://www.python.org/) installed
 - [Virtualenv](https://virtualenv.pypa.io/) recommended
-- [npx] installed
+- [npm](https://www.npmjs.com/package/npx) installed
 
 ### Installation
 
